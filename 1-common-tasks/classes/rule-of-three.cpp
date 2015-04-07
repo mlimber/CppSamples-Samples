@@ -7,23 +7,26 @@ class foo
     public:
         foo()
             : p{ new int{5} }
-        { }
+        {}
 
         foo(const foo& other)
             : p{ new int{ *other.p } }
-        { }
+        {}
 
         foo& operator=(const foo& other)
         {
-            delete p;
-			p = new int{ *other.p };
+            if( this != &other )
+            {
+                *p = *other.p;
+            }
             return *this;
         }
 
         foo(foo&& other)
         { 
-            std::swap( p, other.p );
-		}
+            p = other.p;
+            other.p = nullptr;
+	}
 
         foo& operator=(foo&& other)
         {
@@ -52,8 +55,8 @@ class foo
 // and no memory is leaked, even if an exception occurs.
 // 
 // We also implement a copy constructor ([12-14]), a copy assignment
-// operator ([16-21]), a move constructor ([23-26]), and a move assignment 
-// operator ([28-32]) to manage this resource when copying, moving, or
+// operator ([16-23]), a move constructor ([25-28]), and a move assignment 
+// operator ([30-34]) to manage this resource when copying, moving, or
 // assigning a `foo`. In general, if a class has any one of these functions, it
 // almost certainly needs all of these functions. This idea is known
 // as the *rule of five* or the *[rule of all or nothing](http://arne-mertz.de/2015/02/the-rule-of-zero-revisited-the-rule-of-all-or-nothing/)*.
